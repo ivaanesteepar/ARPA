@@ -1,13 +1,13 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define N 4
 
 int main(int argc, char** argv) {
     int rank, size, i, j;
     int A[N][N], B[N][N], C[N][N];
-    int local_A[N * N / 4], local_B[N * N / 4], local_C[N * N / 4];
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -19,8 +19,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    double startTime, endTime;
+
     if (rank == 0) {
         // Generar las matrices A y B en el proceso 0
+        srand(time(NULL));
         for (i = 0; i < N; i++) {
             for (j = 0; j < N; j++) {
                 A[i][j] = rand() % 10; // Rellenar con valores aleatorios
@@ -43,21 +46,25 @@ int main(int argc, char** argv) {
             printf("\n");
         }
     }
-   
+
+    // Iniciar el tiempo justo antes de la difusión (broadcast)
+    startTime = MPI_Wtime();
 
     // Distribuir las matrices A y B entre los procesos
-    MPI_Scatter(A, N * N / N, MPI_INT, local_A, N * N / N, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Scatter(B, N * N / N, MPI_INT, local_B, N * N / N, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // Realizar la suma local de las matrices
-    for (i = 0; i < N * N / N; i++) {
-        local_C[i] = local_A[i] + local_B[i];
+    for (i = 0; i < N; i++) {
+        MPI_Bcast(A[i], N, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(B[i], N, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
+    // Calcular la suma de las matrices
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            C[i][j] = A[i][j] + B[i][j];
+        }
+    }
 
-    // Recopilar los resultados parciales en el proceso 0
-    MPI_Gather(local_C, N * N / N, MPI_INT, C, N * N / N, MPI_INT, 0, MPI_COMM_WORLD);
-
+    // Terminar el tiempo justo después de la operación
+    endTime = MPI_Wtime();
 
     if (rank == 0) {
         // Mostrar la matriz C (suma de A y B)
@@ -68,6 +75,9 @@ int main(int argc, char** argv) {
             }
             printf("\n");
         }
+
+        // Mostrar el tiempo de ejecución
+        printf("\nTiempo de ejecución: %f segundos\n", endTime - startTime);
     }
 
     MPI_Finalize();
