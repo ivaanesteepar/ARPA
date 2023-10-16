@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     int global_sum[M][N];
     MPI_Reduce(local_sum, global_sum, M * N, MPI_INT, MPI_SUM, 0, cart_comm);
 
-    // Mostrar la matriz suma global desde el proceso 0
+    // Mostrar la matriz llamada suma global desde el proceso 0
     if (rank == 0) {
         printf("\nMatriz Suma Global:\n");
         for (int i = 0; i < M; i++) {
