@@ -1,2 +1,2 @@
 # ARPA
-Prácticas de Arquitecturas Paralelas utilizando la biblioteca MPI en C++
+Prácticas de Arquitecturas Paralelas utilizando la librería MPI en C++
