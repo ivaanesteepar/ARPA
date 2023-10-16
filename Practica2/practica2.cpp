@@ -6,6 +6,7 @@
 #define N 4
 
 int main(int argc, char** argv) {
+    // Inicialización de variables
     int rank, size, i, j;
     int A[N][N], B[N][N], C[N][N];
 
