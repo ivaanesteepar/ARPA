@@ -1,5 +1,7 @@
 <h2>Arquitecturas Paralelas</h2>
 
+<p>Also known as ARPA</p>
+
 <p>Practices of the subject of Parallel Architectures at UBU.</p>
 
 <p>In this subject, there are 10 practices, and the last 5 are evaluated.</p>
